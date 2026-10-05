@@ -1,0 +1,32 @@
+# Node modules and build output
+node_modules/
+.expo/
+dist/
+web-build/
+assets/videos/
+
+# Native builds
+android/
+ios/
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Keystore and credentials
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# macOS & Windows
+.DS_Store
+Thumbs.db
