@@ -1,4 +1,4 @@
-﻿import { Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { Home, Play, TrendingUp, Brain, User } from 'lucide-react-native';
 import theme from '../../constants/theme';
@@ -12,9 +12,12 @@ export default function TabsLayout() {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.replace('/(auth)/login');
+      const timeout = setTimeout(() => {
+        router.replace('/(auth)/login');
+      }, 0);
+      return () => clearTimeout(timeout);
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, router]);
 
   return (
     <Tabs
