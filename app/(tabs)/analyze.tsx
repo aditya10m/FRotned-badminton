@@ -41,10 +41,18 @@ export default function Analyze() {
 
     try {
       const uploaded = await analysisService.uploadVideo(customUri, 'match_play.mp4', fileObj);
-      const job = await analysisService.startAnalysis(uploaded.id, 'Match');
-      await analysisService.waitForCompletion(job.id);
+      const videoId = uploaded?.id || (uploaded as any)?.video?.id;
+      if (!videoId) throw new Error('Upload did not return a video ID. Please try again.');
 
-      // Both payloads now originate from the completed, persisted pose pass.
+      const job = await analysisService.startAnalysis(videoId, 'match');
+
+      // Wait up to 90s, but don't crash on timeout — just try to fetch what we have
+      try {
+        await analysisService.waitForCompletion(job.id, 90_000);
+      } catch (waitErr) {
+        console.warn('Analysis wait timeout or error — fetching available data:', waitErr);
+      }
+
       const [skData, repData] = await Promise.allSettled([
         analysisService.getSkeletonAnalysis(job.id),
         analysisService.getReport(job.id),
@@ -58,6 +66,11 @@ export default function Analyze() {
       }
       if (repData.status === 'fulfilled') {
         setReportData(repData.value);
+      }
+
+      // If we got nothing, show a helpful message but stay on step 2
+      if (skData.status === 'rejected' && repData.status === 'rejected') {
+        setErrorMsg('Analysis is still processing. The report will appear shortly — please wait a moment and refresh.');
       }
     } catch (err) {
       console.warn('Analysis load error:', err);
