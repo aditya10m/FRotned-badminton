@@ -106,6 +106,8 @@ export const analysisService = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      // Ensure axios allows browser to calculate multipart boundary on Web
+      transformRequest: (data) => data,
     });
     return response.data.video;
   },
